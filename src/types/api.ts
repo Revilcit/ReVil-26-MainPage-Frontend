@@ -32,22 +32,30 @@ export interface Event {
   _id: string;
   title: string;
   description: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  venue: string;
+  image?: string;
+  type?: string;
+  date?: string;
+  startTime?: string;
+  endTime?: string;
+  venue?: string;
   capacity: number;
+  currentRegistrations?: number;
   eventType: "workshop" | "talk" | "panel" | "networking";
   status: "upcoming" | "ongoing" | "completed" | "cancelled";
-  speakers?: string[];
-  registeredCount: number;
+  speakers?: Array<{
+    name: string;
+    bio: string;
+    photo: string;
+  }>;
+  rules?: string[];
+  registeredCount?: number;
   isTeamEvent?: boolean;
   teamSize?: {
     min: number;
     max: number;
   };
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface TeamMember {
