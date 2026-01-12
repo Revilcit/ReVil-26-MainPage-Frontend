@@ -2,7 +2,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import QRCode from "qrcode";
-import { fetchUserWithRegistrations, handleImageError } from "@/lib/api";
+import {
+  fetchUserWithRegistrations,
+  handleImageError,
+  getProfilePicture,
+} from "@/lib/api";
 import { UserWithRegistrations } from "@/types/api";
 
 export default function DashboardPage() {
@@ -146,7 +150,7 @@ export default function DashboardPage() {
               <div className="relative group">
                 <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/30 group-hover:border-primary transition-colors">
                   <img
-                    src={user.picture}
+                    src={getProfilePicture(user)}
                     alt={user.name}
                     className="w-full h-full object-cover"
                     onError={handleImageError(user.name)}

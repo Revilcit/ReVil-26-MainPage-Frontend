@@ -4,7 +4,11 @@ import { useState, useEffect } from "react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { useRouter } from "next/navigation";
 import PillNav from "@/components/ui/PillNav";
-import { fetchUserProfile, handleImageError } from "@/lib/api";
+import {
+  fetchUserProfile,
+  handleImageError,
+  getProfilePicture,
+} from "@/lib/api";
 import { UserProfile } from "@/types/api";
 
 const navItems = [
@@ -122,7 +126,7 @@ export function Navbar() {
               >
                 <div className="w-8 h-8 rounded-full overflow-hidden bg-primary/20 flex items-center justify-center">
                   <img
-                    src={user.picture}
+                    src={getProfilePicture(user)}
                     alt={user.name || "User"}
                     className="w-full h-full object-cover"
                     onError={handleImageError(user.name)}
@@ -155,7 +159,7 @@ export function Navbar() {
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-full overflow-hidden bg-primary/20 flex items-center justify-center">
                         <img
-                          src={user.picture}
+                          src={getProfilePicture(user)}
                           alt={user.name || "User"}
                           className="w-full h-full object-cover"
                           onError={handleImageError(user.name)}

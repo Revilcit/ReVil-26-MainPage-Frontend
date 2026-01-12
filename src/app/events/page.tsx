@@ -8,7 +8,7 @@ import { fetchEvents } from "@/lib/api";
 import { Event as ApiEvent } from "@/types/api";
 import toast, { Toaster } from "react-hot-toast";
 
-interface Event {
+interface EventViewModel {
   id: string;
   title: string;
   image: string;
@@ -21,7 +21,7 @@ const FOCUS_DURATION = 2000;
 const INACTIVITY_DELAY = 10000;
 
 export default function EventsPage() {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<EventViewModel[]>([]);
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -38,17 +38,18 @@ export default function EventsPage() {
     const loadEvents = async () => {
       try {
         const apiEvents = await fetchEvents();
-        const transformedEvents: Event[] = apiEvents.map((event: ApiEvent) => ({
-          id: event._id,
-          title: event.title,
-          image: event.image || "/events/default.jpg",
-          description: event.description,
-          type: event.type || event.eventType,
-        }));
+        const transformedEvents: EventViewModel[] = apiEvents.map(
+          (event: ApiEvent) => ({
+            id: event._id,
+            title: event.title,
+            image: event.image || "/events/default.jpg",
+            description: event.description,
+            type: event.type || event.eventType,
+          })
+        );
         setEvents(transformedEvents);
       } catch (error) {
         console.error("Failed to fetch events:", error);
-        toast.error("Failed to load events");
         setEvents([]);
       } finally {
         setLoading(false);
@@ -145,9 +146,99 @@ export default function EventsPage() {
 
   if (events.length === 0) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white text-xl">No events available</div>
-      </div>
+      <LazyMotion features={domAnimation} strict>
+        <div className="min-h-screen bg-black flex items-center justify-center relative overflow-hidden">
+          {/* Subtle gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black"></div>
+          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
+
+          <m.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="relative z-10 text-center max-w-2xl mx-auto px-4"
+          >
+            <m.h1
+              className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400 mb-6"
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              Houston, We Have a Problem!
+            </m.h1>
+
+            <m.p
+              className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              The <span className="text-[#00E5FF] font-bold">Backend Team</span>{" "}
+              forgot to add events... again.
+            </m.p>
+
+            <m.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="space-y-6"
+            >
+              <p className="text-gray-400 text-lg">
+                They&apos;re probably debugging their coffee machine or arguing about
+
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <m.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    toast(
+                      "Calling backend team... Just kidding! Check back soon!",
+                      {
+                        icon: "🔧",
+                        duration: 3000,
+                        style: {
+                          borderRadius: "10px",
+                          background: "#333",
+                          color: "#fff",
+                        },
+                      }
+                    );
+                  }}
+                  className="px-8 py-4 bg-black text-white font-bold rounded-lg text-lg border border-[#00E5FF] hover:bg-[#00E5FF]/10 transition-all shadow-[0_0_15px_rgba(0,229,255,0.3)]"
+                >
+                  Blame Backend Team
+                </m.button>
+
+                <m.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => window.location.reload()}
+                  className="px-8 py-4 bg-white text-black font-bold rounded-lg text-lg hover:bg-gray-200 transition-all"
+                >
+                  Retry
+                </m.button>
+              </div>
+            </m.div>
+
+            <m.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1 }}
+              className="mt-12 text-sm text-gray-500 space-y-2 border-l-2 border-[#00E5FF]/30 pl-6"
+            >
+              <p className="text-[#00E5FF]/70 font-mono">
+                Error Code: BACKEND_TEAM_SLEEPING
+              </p>
+              <p className="text-gray-400">
+                Possible solutions: Coffee | Pizza | More Coffee
+              </p>
+            </m.div>
+          </m.div>
+          <Toaster position="bottom-right" />
+        </div>
+      </LazyMotion>
     );
   }
 
@@ -173,7 +264,6 @@ export default function EventsPage() {
                 fill
                 priority
                 quality={60}
-                className="object-cover opacity-60"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/40" />
               <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
