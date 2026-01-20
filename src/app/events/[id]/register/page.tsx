@@ -23,6 +23,9 @@ export default function RegisterPage() {
   const [department, setDepartment] = useState("");
   const [year, setYear] = useState("");
 
+  // Terms acceptance
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+
   // Team registration fields
   const [isTeamRegistration, setIsTeamRegistration] = useState(false);
   const [teamName, setTeamName] = useState("");
@@ -120,6 +123,11 @@ export default function RegisterPage() {
         return;
       }
 
+      // Validate terms acceptance
+      if (!acceptedTerms) {
+        throw new Error("You must accept the terms and conditions to register");
+      }
+
       let registrationData: RegistrationData;
 
       if (isTeamRegistration) {
@@ -215,12 +223,54 @@ export default function RegisterPage() {
   if (success) {
     return (
       <div className="min-h-screen pt-24 px-4 bg-black flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-green-500 font-mono text-2xl mb-4">
-            ✓ REGISTRATION SUCCESSFUL
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center p-8 bg-black border border-green-500/30 rounded-lg max-w-md"
+        >
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
+            <svg
+              className="w-8 h-8 text-green-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
           </div>
-          <p className="text-gray-400 mb-4">Redirecting to dashboard...</p>
-        </div>
+          <h2 className="text-2xl font-bold text-green-500 mb-2">
+            Registration Successful!
+          </h2>
+          <p className="text-gray-400 mb-4">
+            You have successfully registered for{" "}
+            <span className="text-primary">{event?.title}</span>
+          </p>
+          <p className="text-gray-500 text-sm mb-6">
+            Your QR code will be available in your dashboard. Please show it at
+            the venue for check-in.
+          </p>
+          <div className="flex items-center justify-center gap-2 text-gray-400">
+            <svg
+              className="w-4 h-4 animate-spin"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
+            <span>Redirecting to dashboard...</span>
+          </div>
+        </motion.div>
       </div>
     );
   }
@@ -240,11 +290,14 @@ export default function RegisterPage() {
             {event.title}
           </h2>
           <div className="text-gray-400 font-mono space-y-1">
-            <div>📅 {new Date(event.date).toLocaleDateString()}</div>
             <div>
-              ⏰ {event.startTime} - {event.endTime}
+              📅{" "}
+              {event.date ? new Date(event.date).toLocaleDateString() : "TBA"}
             </div>
-            <div>📍 {event.venue}</div>
+            <div>
+              ⏰ {event.startTime || "TBA"} - {event.endTime || "TBA"}
+            </div>
+            <div>📍 {event.venue || "TBA"}</div>
             {event.isTeamEvent && event.teamSize && (
               <div>
                 👥 Team Size: {event.teamSize.min}-{event.teamSize.max} members
@@ -493,10 +546,31 @@ export default function RegisterPage() {
             </>
           )}
 
+          {/* Terms and Conditions */}
+          <div className="mt-8 p-4 bg-gray-900/50 border border-gray-700 rounded">
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                className="mt-1 w-5 h-5 rounded border-gray-600 bg-black text-primary focus:ring-primary focus:ring-offset-0 cursor-pointer"
+              />
+              <span className="text-gray-300 text-sm leading-relaxed">
+                I agree to the{" "}
+                <span className="text-primary hover:underline cursor-pointer">
+                  Terms and Conditions
+                </span>{" "}
+                and understand that my registration information will be used for
+                event management purposes. I confirm that all information
+                provided is accurate.
+              </span>
+            </label>
+          </div>
+
           <div className="mt-8 flex gap-4">
             <button
               type="submit"
-              disabled={submitting}
+              disabled={submitting || !acceptedTerms}
               className="flex-1 px-6 py-4 bg-primary text-black font-bold uppercase text-sm hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitting ? "REGISTERING..." : "COMPLETE REGISTRATION"}
