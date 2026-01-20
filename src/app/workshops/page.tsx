@@ -17,7 +17,7 @@ export default function WorkshopsPage() {
   const [workshops, setWorkshops] = useState<Workshop[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedWorkshop, setSelectedWorkshop] = useState<Workshop | null>(
-    null
+    null,
   );
 
   useEffect(() => {
@@ -83,9 +83,9 @@ export default function WorkshopsPage() {
             skills with practical, immersive learning experiences.
           </m.p>
 
-          {/* Workshops Grid - 2x2 layout for 4 workshops */}
+          {/* Workshops Grid - 3-column layout for 3 workshops */}
           {workshops.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
               {workshops.map((workshop, index) => (
                 <m.div
                   key={workshop._id}
@@ -132,9 +132,10 @@ export default function WorkshopsPage() {
                         {/* Action Button */}
                         <button
                           onClick={handleRegisterClick}
-                          className="w-full px-4 py-2 text-sm bg-white text-black hover:bg-black hover:text-white border border-white font-bold tracking-wider transition-all uppercase"
+                          className="w-full px-4 py-2 text-sm bg-gray-700 text-gray-400 border border-gray-600 font-bold tracking-wider transition-all uppercase cursor-not-allowed"
+                          disabled
                         >
-                          Register Now
+                          Coming Soon
                         </button>
                       </div>
                     </div>

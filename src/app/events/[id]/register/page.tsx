@@ -22,7 +22,7 @@ export default function RegisterPage() {
   const [college, setCollege] = useState("");
   const [department, setDepartment] = useState("");
   const [year, setYear] = useState("");
- 
+
   // Terms acceptance
   const [acceptedTerms, setAcceptedTerms] = useState(false);
 
@@ -96,7 +96,7 @@ export default function RegisterPage() {
   const updateTeamMember = (
     index: number,
     field: keyof TeamMember,
-    value: string | boolean
+    value: string | boolean,
   ) => {
     const updated = [...teamMembers];
     updated[index] = { ...updated[index], [field]: value };
@@ -137,23 +137,49 @@ export default function RegisterPage() {
         }
         if (teamMembers.length < (event?.teamSize?.min || 1)) {
           throw new Error(
-            `Minimum ${event?.teamSize?.min} team members required`
+            `Minimum ${event?.teamSize?.min} team members required`,
           );
         }
         if (teamMembers.length > (event?.teamSize?.max || 1)) {
           throw new Error(
-            `Maximum ${event?.teamSize?.max} team members allowed`
+            `Maximum ${event?.teamSize?.max} team members allowed`,
           );
         }
-        for (const member of teamMembers) {
-          if (
-            !member.name ||
-            !member.email ||
-            !member.phoneNumber ||
-            !member.college
-          ) {
+        for (let i = 0; i < teamMembers.length; i++) {
+          const member = teamMembers[i];
+
+          // Validate required fields
+          if (!member.name || !member.name.trim()) {
+            throw new Error(`Team member ${i + 1}: Name is required`);
+          }
+          if (!member.email || !member.email.trim()) {
+            throw new Error(`Team member ${i + 1}: Email is required`);
+          }
+          if (!member.phoneNumber || !member.phoneNumber.trim()) {
+            throw new Error(`Team member ${i + 1}: Phone number is required`);
+          }
+          if (!member.college || !member.college.trim()) {
+            throw new Error(`Team member ${i + 1}: College is required`);
+          }
+
+          // Validate email format
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(member.email)) {
+            throw new Error(`Team member ${i + 1}: Invalid email format`);
+          }
+
+          // Block @citchennai.net domain
+          if (member.email.toLowerCase().endsWith("@citchennai.net")) {
             throw new Error(
-              "All team members must have name, email, phone, and college"
+              `Team member ${i + 1}: Registrations from @citchennai.net domain are not allowed. Please use a different email address.`,
+            );
+          }
+
+          // Validate phone number (10 digits)
+          const phoneRegex = /^[0-9]{10}$/;
+          if (!phoneRegex.test(member.phoneNumber.replace(/[\s\-\(\)]/g, ""))) {
+            throw new Error(
+              `Team member ${i + 1}: Phone number must be 10 digits`,
             );
           }
         }
@@ -166,8 +192,17 @@ export default function RegisterPage() {
         };
       } else {
         // Validate individual registration
-        if (!phoneNumber || !college) {
-          throw new Error("Phone number and college are required");
+        if (!phoneNumber || !phoneNumber.trim()) {
+          throw new Error("Phone number is required");
+        }
+        if (!college || !college.trim()) {
+          throw new Error("College is required");
+        }
+
+        // Validate phone number (10 digits)
+        const phoneRegex = /^[0-9]{10}$/;
+        if (!phoneRegex.test(phoneNumber.replace(/[\s\-\(\)]/g, ""))) {
+          throw new Error("Phone number must be 10 digits");
         }
 
         registrationData = {
@@ -446,10 +481,13 @@ export default function RegisterPage() {
                             updateTeamMember(
                               index,
                               "phoneNumber",
-                              e.target.value
+                              e.target.value,
                             )
                           }
+                          pattern="[0-9]{10}"
+                          title="Phone number must be 10 digits"
                           className="w-full px-3 py-2 bg-black border border-gray-600 text-white rounded focus:border-primary focus:outline-none text-sm"
+                          placeholder="10-digit number"
                           required
                         />
                       </div>
@@ -478,7 +516,7 @@ export default function RegisterPage() {
                             updateTeamMember(
                               index,
                               "department",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                           className="w-full px-3 py-2 bg-black border border-gray-600 text-white rounded focus:border-primary focus:outline-none text-sm"
@@ -519,8 +557,10 @@ export default function RegisterPage() {
                     type="tel"
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
+                    pattern="[0-9]{10}"
+                    title="Phone number must be 10 digits"
                     className="w-full px-4 py-3 bg-black border border-gray-600 text-white rounded focus:border-primary focus:outline-none"
-                    placeholder="Enter your phone number"
+                    placeholder="10-digit phone number"
                     required
                   />
                 </div>

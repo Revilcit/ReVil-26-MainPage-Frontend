@@ -60,7 +60,7 @@ export default function DashboardPage() {
           router.push("/login");
         } else if (error.message === "SERVER_OFFLINE") {
           console.warn(
-            "Backend server is offline. Please start the server at http://localhost:5000"
+            "Backend server is offline. Please start the server at http://localhost:5000",
           );
           // Try to use cached user data for basic display
           const cachedUser = localStorage.getItem("user");
@@ -240,7 +240,7 @@ export default function DashboardPage() {
                 Download QR Code
               </button>
               <p className="text-xs text-gray-500 mt-2 text-center">
-                Use this QR code for event check-ins
+                Use this single QR code for all event check-ins
               </p>
             </div>
           </div>
@@ -278,7 +278,7 @@ export default function DashboardPage() {
                   <div className="text-3xl font-bold text-white mb-1">
                     {
                       registrations.filter(
-                        (r) => r.registrationStatus === "attended"
+                        (r) => r.registrationStatus === "attended",
                       ).length
                     }
                   </div>
@@ -326,26 +326,6 @@ export default function DashboardPage() {
                             <div>👥 Team: {reg.teamName}</div>
                           )}
                         </div>
-                        {/* View QR Button */}
-                        <button
-                          onClick={() => setSelectedRegistration(reg)}
-                          className="mt-3 w-full px-4 py-2 bg-primary/20 border border-primary/50 text-primary text-sm font-bold uppercase hover:bg-primary/30 transition-colors flex items-center justify-center gap-2"
-                        >
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h2M4 12h2m10 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
-                            />
-                          </svg>
-                          View Entry QR Code
-                        </button>
                       </div>
                     ))}
                 </div>
@@ -433,9 +413,9 @@ export default function DashboardPage() {
           >
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h3 className="text-xl font-bold text-white">Entry QR Code</h3>
+                <h3 className="text-xl font-bold text-white">Your QR Code</h3>
                 <p className="text-primary text-sm">
-                  {selectedRegistration.event.title}
+                  Universal entry code for all events
                 </p>
               </div>
               <button
@@ -459,60 +439,46 @@ export default function DashboardPage() {
             </div>
 
             <div className="bg-white p-4 rounded-lg mb-4">
-              {selectedRegistration.qrCodeImage ? (
+              {qrCodeUrl ? (
                 <img
-                  src={selectedRegistration.qrCodeImage}
-                  alt="Registration QR Code"
+                  src={qrCodeUrl}
+                  alt="User QR Code"
                   className="w-full aspect-square object-contain"
                 />
               ) : (
                 <div className="w-full aspect-square flex items-center justify-center text-gray-500">
-                  QR Code not available
+                  Generating QR Code...
                 </div>
               )}
             </div>
 
             <div className="text-center text-gray-400 text-sm mb-4">
-              <p>Show this QR code at the venue entrance</p>
-              <p>for quick check-in</p>
+              <p>Use your single QR code for all event check-ins</p>
+              <p>Admins will choose the appropriate action when scanning</p>
             </div>
 
             <div className="space-y-2 text-sm text-gray-400">
               <div className="flex justify-between">
-                <span>Event:</span>
-                <span className="text-white">
-                  {selectedRegistration.event.title}
-                </span>
+                <span>User:</span>
+                <span className="text-white">{user.name}</span>
               </div>
-              {selectedRegistration.isTeamRegistration &&
-                selectedRegistration.teamName && (
-                  <div className="flex justify-between">
-                    <span>Team:</span>
-                    <span className="text-white">
-                      {selectedRegistration.teamName}
-                    </span>
-                  </div>
-                )}
+              <div className="flex justify-between">
+                <span>Email:</span>
+                <span className="text-white">{user.email}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Total Events:</span>
+                <span className="text-white">{registrations.length}</span>
+              </div>
             </div>
 
-            {selectedRegistration.qrCodeImage && (
-              <button
-                onClick={() => {
-                  if (!selectedRegistration.qrCodeImage) return;
-                  const link = document.createElement("a");
-                  link.href = selectedRegistration.qrCodeImage;
-                  link.download = `revil-qr-${selectedRegistration.event.title
-                    .replace(/\s+/g, "-")
-                    .toLowerCase()}.png`;
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
-                }}
-                className="mt-4 w-full px-4 py-3 bg-primary text-black font-bold uppercase text-sm hover:bg-white transition-colors"
-              >
-                Download QR Code
-              </button>
-            )}
+            <button
+              onClick={downloadQRCode}
+              disabled={!qrCodeUrl}
+              className="mt-4 w-full px-4 py-3 bg-primary text-black font-bold uppercase text-sm hover:bg-white transition-colors disabled:opacity-50"
+            >
+              Download QR Code
+            </button>
           </div>
         </div>
       )}
