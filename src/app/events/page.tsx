@@ -44,7 +44,6 @@ export default function EventsPage() {
         const transformedEvents: EventViewModel[] = apiEvents.map(
           (event: ApiEvent, idx: number) => ({
             id:
-              event.slug ||
               event._id ||
               (event.title
                 ? event.title.toLowerCase().replace(/\s+/g, "-")
