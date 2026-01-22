@@ -38,7 +38,7 @@ export default function Home() {
     );
     
     console.log(
-      "%Happy Hacking! - Revil Payaluga",
+      "%cHappy Hacking! - Revil Payaluga",
       "color: #ff00ff; font-size: 12px; font-style: italic;"
     );
   }, []);
