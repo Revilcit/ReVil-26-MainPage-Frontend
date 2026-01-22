@@ -166,10 +166,13 @@ Remember: Stay on topic! Only Revil-related queries get serious answers. Everyth
             setMessages(prev => [...prev, { text, isBot: true }]);
         } catch (error) {
             console.error("Error generating response:", error);
-            setMessages(prev => [...prev, { 
-                text: "Sorry, I encountered an error. Please try again.", 
-                isBot: true 
-            }]);
+            setMessages(prev => [
+                ...prev,
+                {
+                    text: "Sorry, I ran into a problem while contacting the Revil assistant service. This might be due to a network issue or the chatbot being temporarily unavailable. Please check your internet connection and try again in a moment.",
+                    isBot: true,
+                },
+            ]);
         } finally {
             setIsLoading(false);
         }
