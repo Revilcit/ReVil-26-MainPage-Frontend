@@ -54,8 +54,8 @@ export default function BuildingCheckInPage() {
 
         // Check if user has permission
         if (
-          userData.role === "admin" ||
-          userData.role === "registration-team"
+          userData.role === "superadmin" ||
+          userData.role === "registration_team"
         ) {
           setAuthorized(true);
         } else {
@@ -88,20 +88,8 @@ export default function BuildingCheckInPage() {
       }
 
       try {
-        // Parse QR code - could be JSON or just the qrCode string
-        let qrCode = decodedText;
-        try {
-          const parsed = JSON.parse(decodedText);
-          // If it's our user QR format, we need to look up their registration
-          if (parsed.userId) {
-            // This is user info QR, we need the registration QR code
-            // For now, use the raw string
-            qrCode = decodedText;
-          }
-        } catch {
-          // Not JSON, use as-is (it's probably the actual qrCode)
-          qrCode = decodedText;
-        }
+        // QR code should be user QR code (JSON with userId)
+        const qrCode = decodedText;
 
         const result = await performCheckIn(token, qrCode, "building");
 
@@ -138,7 +126,7 @@ export default function BuildingCheckInPage() {
         setIsProcessing(false);
       }
     },
-    [isProcessing, router]
+    [isProcessing, router],
   );
 
   const handleReset = () => {
@@ -181,8 +169,8 @@ export default function BuildingCheckInPage() {
           </div>
           <h2 className="text-red-400 text-xl font-bold mb-2">Access Denied</h2>
           <p className="text-gray-400 mb-6">
-            You need <span className="text-primary">registration-team</span> or{" "}
-            <span className="text-primary">admin</span> role to access the
+            You need <span className="text-primary">registration_team</span> or{" "}
+            <span className="text-primary">superadmin</span> role to access the
             building check-in scanner.
           </p>
           <button
@@ -364,8 +352,8 @@ export default function BuildingCheckInPage() {
                         scan.success && !scan.alreadyCheckedIn
                           ? "bg-green-500/10 border-green-500/30"
                           : scan.alreadyCheckedIn
-                          ? "bg-yellow-500/10 border-yellow-500/30"
-                          : "bg-red-500/10 border-red-500/30"
+                            ? "bg-yellow-500/10 border-yellow-500/30"
+                            : "bg-red-500/10 border-red-500/30"
                       }`}
                     >
                       <div className="flex items-center gap-3">
@@ -374,8 +362,8 @@ export default function BuildingCheckInPage() {
                             scan.success && !scan.alreadyCheckedIn
                               ? "bg-green-500/20"
                               : scan.alreadyCheckedIn
-                              ? "bg-yellow-500/20"
-                              : "bg-red-500/20"
+                                ? "bg-yellow-500/20"
+                                : "bg-red-500/20"
                           }`}
                         >
                           {scan.success && !scan.alreadyCheckedIn && (

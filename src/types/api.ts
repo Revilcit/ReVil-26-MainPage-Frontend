@@ -13,7 +13,8 @@ export interface UserProfile {
   department?: string;
   checkedIn: boolean;
   checkInTime: Date | null;
-  role: "user" | "admin" | "registration-team" | "event-team";
+  role: "user" | "superadmin" | "event_manager" | "registration_team";
+  qrCode?: string; // User's unique QR code for check-ins
   lastLogin: Date;
   createdAt: Date;
 }
@@ -25,7 +26,8 @@ export interface UserBasic {
   picture: string;
   checkedIn: boolean;
   checkInTime: Date | null;
-  role: "user" | "admin" | "registration-team" | "event-team";
+  role: "user" | "superadmin" | "event_manager" | "registration_team";
+  qrCode?: string; // User's unique QR code for check-ins
 }
 
 export interface Event {
@@ -46,6 +48,12 @@ export interface Event {
     name: string;
     bio: string;
     photo: string;
+  }>;
+  // Event coordinators / contacts
+  contacts?: Array<{
+    name: string;
+    phone?: string;
+    email?: string;
   }>;
   rules?: string[];
   registeredCount?: number;
@@ -128,7 +136,7 @@ export interface AuthSuccessMessage {
     name: string;
     email: string;
     picture: string;
-    role: "user" | "admin" | "registration-team" | "event-team";
+    role: "user" | "superadmin" | "event_manager" | "registration_team";
     checkedIn: boolean;
   };
 }

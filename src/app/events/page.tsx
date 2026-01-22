@@ -41,15 +41,18 @@ export default function EventsPage() {
       try {
         const apiEvents = await fetchEvents();
 
-
         const transformedEvents: EventViewModel[] = apiEvents.map(
-          (event: ApiEvent) => ({
-            id: event._id,
+          (event: ApiEvent, idx: number) => ({
+            id:
+              event._id ||
+              (event.title
+                ? event.title.toLowerCase().replace(/\s+/g, "-")
+                : `event-${idx}`),
             title: event.title,
             image: event.image || "/events/default.jpg",
             description: event.description,
             type: event.type || event.eventType,
-          })
+          }),
         );
         setEvents(transformedEvents);
       } catch (error) {
@@ -67,7 +70,7 @@ export default function EventsPage() {
 
   const upcoming = useMemo(
     () => [...events.slice(index), ...events.slice(0, index)],
-    [index, events]
+    [index, events],
   );
 
   const clearTimers = useCallback(() => {
@@ -81,7 +84,7 @@ export default function EventsPage() {
     clearTimers();
     inactivityRef.current = setTimeout(
       () => setPaused(false),
-      INACTIVITY_DELAY
+      INACTIVITY_DELAY,
     );
   }, [clearTimers]);
 
@@ -130,7 +133,7 @@ export default function EventsPage() {
   };
 
   const handleRegisterClick = (eventId?: string) => {
-    // Check if user is logged in
+    // // // Check if user is logged in
     // const token =
     //   typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
@@ -146,6 +149,20 @@ export default function EventsPage() {
     //   router.push("/login");
     //   return;
     // }
+
+    // // Use provided eventId or current event from carousel
+
+    // const targetEventId = eventId || current?.id;
+
+    // if (targetEventId) {
+    //   router.push(`/events/${targetEventId}/register`);
+    // }
+
+    // comment the above to close registrations
+
+    // vishal
+
+    // comment the below if you want registrations to be open
     toast("Registrations are coming soon!", {
       style: {
         borderRadius: "10px",
@@ -153,13 +170,6 @@ export default function EventsPage() {
         color: "#fff",
       },
     });
-
-    // Use provided eventId or current event from carousel
-    // const targetEventId = eventId || current?.id;
-
-    // if (targetEventId) {
-    //   router.push(`/events/${targetEventId}/register`);
-    // }
   };
 
   if (loading) {
@@ -229,7 +239,7 @@ export default function EventsPage() {
                           background: "#333",
                           color: "#fff",
                         },
-                      }
+                      },
                     );
                   }}
                   className="px-8 py-4 bg-black text-white font-bold rounded-lg text-lg border border-[#00E5FF] hover:bg-[#00E5FF]/10 transition-all shadow-[0_0_15px_rgba(0,229,255,0.3)]"
@@ -441,7 +451,7 @@ export default function EventsPage() {
                     {upcoming.slice(0, 3).map((event, idx) => (
                       <m.div
                         layout
-                        key={event.id}
+                        key={idx}
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{
                           scale: idx === 0 ? 1 : 0.9,
@@ -467,7 +477,7 @@ export default function EventsPage() {
                         onClick={() => {
                           pauseAutoplay();
                           const originalIndex = events.findIndex(
-                            (e) => e.id === event.id
+                            (e) => e.id === event.id,
                           );
                           setIndex(originalIndex);
                         }}

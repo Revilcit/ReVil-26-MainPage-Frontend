@@ -57,14 +57,17 @@ export default function SessionCheckInPage() {
         setUser(userData);
 
         // Check if user has permission
-        if (userData.role === "admin" || userData.role === "event-team") {
+        if (
+          userData.role === "superadmin" ||
+          userData.role === "event_manager"
+        ) {
           setAuthorized(true);
 
           // Fetch events for selection
           const eventsData = await fetchAllEvents();
           // Filter to only upcoming/ongoing events
           const activeEvents = eventsData.filter(
-            (e) => e.status === "upcoming" || e.status === "ongoing"
+            (e) => e.status === "upcoming" || e.status === "ongoing",
           );
           setEvents(activeEvents);
         } else {
@@ -97,18 +100,16 @@ export default function SessionCheckInPage() {
       }
 
       try {
-        // Parse QR code
-        let qrCode = decodedText;
-        try {
-          const parsed = JSON.parse(decodedText);
-          if (parsed.userId) {
-            qrCode = decodedText;
-          }
-        } catch {
-          qrCode = decodedText;
-        }
+        // Parse QR code - should be user QR code with userId
+        const qrCode = decodedText;
 
-        const result = await performCheckIn(token, qrCode, "session");
+        // Perform session check-in with selected event ID
+        const result = await performCheckIn(
+          token,
+          qrCode,
+          "session",
+          selectedEvent._id,
+        );
 
         const checkInData: CheckInData = {
           success: result.success,
@@ -143,7 +144,7 @@ export default function SessionCheckInPage() {
         setIsProcessing(false);
       }
     },
-    [isProcessing, selectedEvent, router]
+    [isProcessing, selectedEvent, router],
   );
 
   const handleReset = () => {
@@ -198,8 +199,8 @@ export default function SessionCheckInPage() {
           </div>
           <h2 className="text-red-400 text-xl font-bold mb-2">Access Denied</h2>
           <p className="text-gray-400 mb-6">
-            You need <span className="text-primary">event-team</span> or{" "}
-            <span className="text-primary">admin</span> role to access the
+            You need <span className="text-primary">event_manager</span> or{" "}
+            <span className="text-primary">superadmin</span> role to access the
             session check-in scanner.
           </p>
           <button
@@ -567,8 +568,8 @@ export default function SessionCheckInPage() {
                         scan.success && !scan.alreadyCheckedIn
                           ? "bg-green-500/10 border-green-500/30"
                           : scan.alreadyCheckedIn
-                          ? "bg-yellow-500/10 border-yellow-500/30"
-                          : "bg-red-500/10 border-red-500/30"
+                            ? "bg-yellow-500/10 border-yellow-500/30"
+                            : "bg-red-500/10 border-red-500/30"
                       }`}
                     >
                       <div className="flex items-center gap-3">
@@ -577,8 +578,8 @@ export default function SessionCheckInPage() {
                             scan.success && !scan.alreadyCheckedIn
                               ? "bg-green-500/20"
                               : scan.alreadyCheckedIn
-                              ? "bg-yellow-500/20"
-                              : "bg-red-500/20"
+                                ? "bg-yellow-500/20"
+                                : "bg-red-500/20"
                           }`}
                         >
                           {scan.success && !scan.alreadyCheckedIn && (

@@ -2,10 +2,33 @@
  * API Utility Functions for ReVil 2026
  */
 
+import axios from "axios";
 import { UserProfile, UserWithRegistrations, ApiResponse } from "@/types/api";
 
 export const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+/**
+ * Axios instance with default configuration
+ */
+export const api = axios.create({
+  baseURL: `${API_URL}/api`,
+  headers: {
+    "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "true",
+  },
+});
+
+// Add token to requests if available
+api.interceptors.request.use((config) => {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  return config;
+});
 
 /**
  * Get default avatar URL based on user's name
@@ -153,27 +176,24 @@ export async function registerForEvent(
  */
 export async function fetchEvents(): Promise<import("@/types/api").Event[]> {
   try {
-    console.log("Fetching events from API_URL:", API_URL);
-    const response = await fetch(`${API_URL}/api/events?eventType=event`, {
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
+    const response = await fetch(
+      `${API_URL}/api/events?eventType=event&status=upcoming`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
+        },
       },
-    });
-    console.log("Response received:", response);
+    );
+
     if (!response.ok) {
       throw new Error(`Failed to fetch events: ${response.statusText}`);
     }
 
     const data = await response.json();
-    console.log("Parsed data:", data);
-    console.log("data.data:", data.data);
-    console.log("Returning:", data.data || data);
-    return data.data || data;
+    return data.data || [];
   } catch (error) {
-    if (error instanceof TypeError && error.message === "Failed to fetch") {
-      throw new Error("SERVER_OFFLINE");
-    }
+    console.error("Failed to fetch events from backend:", error);
     throw error;
   }
 }
@@ -183,23 +203,24 @@ export async function fetchEvents(): Promise<import("@/types/api").Event[]> {
  */
 export async function fetchWorkshops(): Promise<import("@/types/api").Event[]> {
   try {
-    const response = await fetch(`${API_URL}/api/events?eventType=workshop`, {
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
+    const response = await fetch(
+      `${API_URL}/api/events?eventType=workshop&status=upcoming`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
+        },
       },
-    });
+    );
 
     if (!response.ok) {
       throw new Error(`Failed to fetch workshops: ${response.statusText}`);
     }
 
     const data = await response.json();
-    return data.data || data;
+    return data.data || [];
   } catch (error) {
-    if (error instanceof TypeError && error.message === "Failed to fetch") {
-      throw new Error("SERVER_OFFLINE");
-    }
+    console.error("Failed to fetch workshops from backend:", error);
     throw error;
   }
 }
@@ -269,16 +290,32 @@ export async function performCheckIn(
   token: string,
   qrCode: string,
   checkInType: CheckInType,
+  eventId?: string,
 ): Promise<CheckInResponse> {
   try {
-    const response = await fetch(`${API_URL}/api/checkin`, {
+    // Use specific endpoints for building vs session check-in
+    const endpoint =
+      checkInType === "building"
+        ? `${API_URL}/api/checkin/building`
+        : `${API_URL}/api/checkin/session`;
+
+    const body: { qrCode: string; eventId?: string } = {
+      qrCode, // Send raw QR code value
+    };
+
+    // Add eventId for session check-in (required)
+    if (checkInType === "session" && eventId) {
+      body.eventId = eventId;
+    }
+
+    const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       credentials: "include",
-      body: JSON.stringify({ qrCode, checkInType }),
+      body: JSON.stringify(body),
     });
 
     const data = await response.json();
@@ -311,18 +348,23 @@ export async function performCheckIn(
 export async function verifyQRCode(
   token: string,
   qrCode: string,
+  eventId?: string,
 ): Promise<CheckInResponse> {
   try {
-    const response = await fetch(
-      `${API_URL}/api/checkin/verify/${encodeURIComponent(qrCode)}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
+    const body: { qrCode: string; eventId?: string } = { qrCode };
+    if (eventId) {
+      body.eventId = eventId;
+    }
+
+    const response = await fetch(`${API_URL}/api/checkin/verify`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
-    );
+      credentials: "include",
+      body: JSON.stringify(body),
+    });
 
     const data = await response.json();
     return data;
