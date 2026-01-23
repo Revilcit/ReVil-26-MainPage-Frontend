@@ -28,11 +28,8 @@ export default function EventsPage() {
   const [paused, setPaused] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
 
-  
-
   const autoplayRef = useRef<NodeJS.Timeout | null>(null);
   const inactivityRef = useRef<NodeJS.Timeout | null>(null);
-  
 
   // Fetch events from API
   useEffect(() => {

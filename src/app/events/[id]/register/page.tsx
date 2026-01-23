@@ -339,28 +339,33 @@ export default function RegisterPage() {
                 Event Coordinators
               </h3>
               <ul className="space-y-2">
-                {event.contacts.map((c: { name: string; phone?: string; email?: string }, idx: number) => (
-                  <li
-                    key={idx}
-                    className="text-sm text-gray-300 flex flex-col md:flex-row md:items-center md:gap-4"
-                  >
-                    <div className="font-medium text-white">{c.name}</div>
-                    <div className="text-gray-400">
-                      <a
-                        href={`tel:${c.phone?.replace(/\s+/g, "")}`}
-                        className="hover:underline mr-3"
-                      >
-                        {c.phone}
-                      </a>
-                      <a
-                        href={`mailto:${c.email}`}
-                        className="text-primary hover:underline"
-                      >
-                        {c.email}
-                      </a>
-                    </div>
-                  </li>
-                ))}
+                {event.contacts.map(
+                  (
+                    c: { name: string; phone?: string; email?: string },
+                    idx: number,
+                  ) => (
+                    <li
+                      key={idx}
+                      className="text-sm text-gray-300 flex flex-col md:flex-row md:items-center md:gap-4"
+                    >
+                      <div className="font-medium text-white">{c.name}</div>
+                      <div className="text-gray-400">
+                        <a
+                          href={`tel:${c.phone?.replace(/\s+/g, "")}`}
+                          className="hover:underline mr-3"
+                        >
+                          {c.phone}
+                        </a>
+                        <a
+                          href={`mailto:${c.email}`}
+                          className="text-primary hover:underline"
+                        >
+                          {c.email}
+                        </a>
+                      </div>
+                    </li>
+                  ),
+                )}
               </ul>
             </div>
           )}

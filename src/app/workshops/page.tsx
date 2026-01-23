@@ -16,7 +16,6 @@ interface Workshop extends ApiEvent {
 export default function WorkshopsPage() {
   const [workshops, setWorkshops] = useState<Workshop[]>([]);
   const [loading, setLoading] = useState(true);
-  
 
   useEffect(() => {
     const loadWorkshops = async () => {
