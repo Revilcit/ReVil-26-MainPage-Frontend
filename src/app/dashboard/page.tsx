@@ -15,6 +15,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [selectedRegistration, setSelectedRegistration] =
     useState<EventRegistration | null>(null);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -442,9 +443,8 @@ export default function DashboardPage() {
             </div>
 
             <button
-              onClick={downloadQRCode}
-              disabled={!qrCodeUrl}
               className="mt-4 w-full px-4 py-3 bg-primary text-black font-bold uppercase text-sm hover:bg-white transition-colors disabled:opacity-50"
+              disabled={!qrCodeUrl}
             >
               Download QR Code
             </button>
