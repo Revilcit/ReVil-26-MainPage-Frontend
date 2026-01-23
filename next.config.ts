@@ -13,17 +13,17 @@ const nextConfig: NextConfig = {
         hostname: "ui-avatars.com",
       },
     ],
-    formats: ['image/avif', 'image/webp'], // Modern image formats
+    formats: ["image/avif", "image/webp"], // Modern image formats
   },
-  
+
   // Compiler optimizations
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production', // Remove console.logs in production
+    removeConsole: process.env.NODE_ENV === "production", // Remove console.logs in production
   },
-  
+
   // Enable SWC minification for faster builds
-  swcMinify: true,
-  
+  // swcMinify: true,
+
   // Experimental features for better performance
   experimental: {
     optimizeCss: true, // CSS optimization
