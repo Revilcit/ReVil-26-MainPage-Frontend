@@ -648,6 +648,82 @@ export default function WorkshopRegisterPage() {
                       ? "Workshop Full"
                       : "Complete Registration"}
                 </button>
+
+                {/* Policy Links - Required for Cashfree Production */}
+                <div className="mt-6 pt-6 border-t border-gray-700 space-y-3">
+                  <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">
+                    Important Information
+                  </h3>
+                  <div className="space-y-2 text-xs text-gray-400">
+                    <p className="flex items-start gap-2">
+                      <svg
+                        className="w-4 h-4 text-primary mt-0.5 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span>
+                        Service: {workshop.title}
+                      </span>
+                    </p>
+                    <p className="flex items-start gap-2">
+                      <svg
+                        className="w-4 h-4 text-primary mt-0.5 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span>
+                        Price: ₹{workshop.fee || 0} INR
+                      </span>
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-2 mt-4">
+                    <a
+                      href="/contact"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-primary hover:text-white transition-colors underline"
+                    >
+                      Contact Us
+                    </a>
+                    <a
+                      href="/terms"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-primary hover:text-white transition-colors underline"
+                    >
+                      Terms & Conditions
+                    </a>
+                    <a
+                      href="/refunds"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-primary hover:text-white transition-colors underline"
+                    >
+                      Refunds & Cancellations
+                    </a>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-4 leading-relaxed">
+                    By registering, you agree to our Terms & Conditions and
+                    Refunds & Cancellations policy. Secure payment powered by
+                    Cashfree.
+                  </p>
+                </div>
               </form>
             </div>
           </div>
