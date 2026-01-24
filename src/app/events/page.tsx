@@ -479,7 +479,7 @@ export default function EventsPage() {
                     {/* Your new White Button */}
                     <button
                       onClick={() => handleRegisterClick(current.id)}
-                      className="px-6 py-2 mt-4 text-sm bg-white text-black hover:bg-black hover:text-white border border-white font-bold tracking-wider transition-all transform hover:-translate-y-1 uppercase"
+                      className="px-6 py-2 mt-4 text-sm bg-white text-black hover:bg-black hover:text-white border border-white font-bold tracking-wider transition-all transform hover:-translate-y-1 uppercase flex items-center justify-center whitespace-nowrap"
                     >
                       Initialize Registration
                     </button>
@@ -514,7 +514,7 @@ export default function EventsPage() {
                       </span>
                       <button
                         onClick={() => handleRegisterClick(current.id)}
-                        className="h-[42px] px-6 text-sm bg-white text-black hover:bg-black hover:text-white border border-white font-bold tracking-wider transition-all uppercase shadow-[0_0_15px_rgba(0,229,255,0.2)]"
+                        className="h-[42px] px-6 text-sm bg-white text-black hover:bg-black hover:text-white border border-white font-bold tracking-wider transition-all uppercase shadow-[0_0_15px_rgba(0,229,255,0.2)] flex items-center justify-center whitespace-nowrap"
                       >
                         INITIALIZE REGISTRATION
                       </button>

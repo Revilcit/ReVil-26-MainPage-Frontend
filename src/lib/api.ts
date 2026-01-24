@@ -482,3 +482,91 @@ export async function fetchAllEvents(): Promise<import("@/types/api").Event[]> {
     throw error;
   }
 }
+
+/**
+ * Fetch workshop by slug
+ */
+export async function fetchWorkshopBySlug(
+  slug: string,
+): Promise<import("@/types/api").Event> {
+  try {
+    const response = await fetch(`${API_URL}/api/workshops/slug/${slug}`, {
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch workshop: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error("Failed to fetch workshop:", error);
+    throw error;
+  }
+}
+
+/**
+ * Register for a workshop
+ */
+export async function registerForWorkshop(
+  workshopId: string,
+  registrationData: {
+    phone?: string;
+    college?: string;
+    year?: string;
+    branch?: string;
+    additionalInfo?: string;
+  },
+): Promise<any> {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("UNAUTHORIZED");
+    }
+
+    const response = await api.post(
+      `/workshops/${workshopId}/register`,
+      registrationData,
+    );
+
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.status === 401) {
+      throw new Error("UNAUTHORIZED");
+    }
+    if (error.response?.data?.message) {
+      throw new Error(error.response.data.message);
+    }
+    throw error;
+  }
+}
+
+/**
+ * Cancel workshop registration
+ */
+export async function cancelWorkshopRegistration(
+  workshopId: string,
+): Promise<any> {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("UNAUTHORIZED");
+    }
+
+    const response = await api.delete(`/workshops/${workshopId}/register`);
+
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.status === 401) {
+      throw new Error("UNAUTHORIZED");
+    }
+    if (error.response?.data?.message) {
+      throw new Error(error.response.data.message);
+    }
+    throw error;
+  }
+}
