@@ -57,7 +57,13 @@ export default function WorkshopsPage() {
     if (workshop.slug) {
       router.push(`/workshops/${workshop.slug}/register`);
     } else {
-      toast.error("Workshop registration not available");
+      // Fallback: use workshop ID if slug is not available
+      console.warn("Workshop slug not found, using ID instead:", workshop);
+      if (workshop._id) {
+        router.push(`/workshops/${workshop._id}/register`);
+      } else {
+        toast.error("Workshop registration not available - missing slug or ID");
+      }
     }
   };
 

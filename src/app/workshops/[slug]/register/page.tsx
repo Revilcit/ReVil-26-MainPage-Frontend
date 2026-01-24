@@ -47,11 +47,35 @@ export default function WorkshopRegisterPage() {
           return;
         }
 
-        const data = await fetchWorkshopBySlug(slug);
+        // Try to fetch workshop by slug first
+        let data;
+        try {
+          data = await fetchWorkshopBySlug(slug);
+        } catch (slugError) {
+          console.warn("Failed to fetch by slug, trying by ID:", slugError);
+          // If slug fetch fails, try fetching by ID
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/workshops/${slug}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+              },
+            },
+          );
+
+          if (!response.ok) {
+            throw new Error("Workshop not found");
+          }
+
+          const result = await response.json();
+          data = result.data;
+        }
+
         setWorkshop(data);
       } catch (error: any) {
         console.error("Failed to load workshop:", error);
-        toast.error("Failed to load workshop details");
+        toast.error(error.message || "Failed to load workshop details");
         router.push("/workshops");
       } finally {
         setLoading(false);

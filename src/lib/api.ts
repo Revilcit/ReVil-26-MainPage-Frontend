@@ -495,17 +495,21 @@ export async function fetchWorkshopBySlug(
         "Content-Type": "application/json",
         "ngrok-skip-browser-warning": "true",
       },
+      cache: "no-store",
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch workshop: ${response.statusText}`);
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        errorData.message || `Failed to fetch workshop: ${response.statusText}`,
+      );
     }
 
     const data = await response.json();
     return data.data;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to fetch workshop:", error);
-    throw error;
+    throw new Error(error.message || "Failed to fetch workshop");
   }
 }
 
