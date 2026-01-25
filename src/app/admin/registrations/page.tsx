@@ -16,6 +16,7 @@ interface Registration {
     title: string;
     date: string;
     venue: string;
+    eventType?: string;
   };
   isTeamRegistration: boolean;
   teamName?: string;
@@ -53,6 +54,9 @@ export default function AdminRegistrationsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sendingEmail, setSendingEmail] = useState<string | null>(null);
   const [sendingOD, setSendingOD] = useState<string | null>(null);
+  const [teamModalOpen, setTeamModalOpen] = useState(false);
+  const [selectedTeam, setSelectedTeam] = useState<Registration | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -208,6 +212,48 @@ export default function AdminRegistrationsPage() {
     }
   };
 
+  const handleDeleteRegistration = async (registrationId: string) => {
+    if (
+      !confirm(
+        "Are you sure you want to delete this registration? This action cannot be undone.",
+      )
+    ) {
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    setDeletingId(registrationId);
+    try {
+      const response = await fetch(
+        `${API_URL}/api/admin/registrations/${registrationId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete registration");
+      }
+
+      alert("Registration deleted successfully!");
+      fetchRegistrations(token);
+    } catch (err: any) {
+      alert(`Error: ${err.message}`);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const openTeamModal = (registration: Registration) => {
+    setSelectedTeam(registration);
+    setTeamModalOpen(true);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen pt-24 px-4 bg-black flex items-center justify-center">
@@ -241,7 +287,10 @@ export default function AdminRegistrationsPage() {
           </h2>
         </motion.div>
 
-        {/* Search Bar */}
+        {/* Search BEvent Type
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-primary">
+                    Reg ar */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -272,25 +321,28 @@ export default function AdminRegistrationsPage() {
             <table className="w-full">
               <thead className="bg-gray-900/50 border-b border-primary/20">
                 <tr>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-primary">
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                     User
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-primary">
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-primary uppercase tracking-wider">
                     Event
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-primary">
-                    Type
+                  <th className="px-3 py-2 text-center text-xs font-semibold text-primary uppercase tracking-wider">
+                    Event Type
                   </th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-primary">
-                    Building Check-in
+                  <th className="px-3 py-2 text-center text-xs font-semibold text-primary uppercase tracking-wider">
+                    Reg Type
                   </th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-primary">
-                    Session Check-in
+                  <th className="px-3 py-2 text-center text-xs font-semibold text-primary uppercase tracking-wider">
+                    Building
                   </th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-primary">
+                  <th className="px-3 py-2 text-center text-xs font-semibold text-primary uppercase tracking-wider">
+                    Session
+                  </th>
+                  <th className="px-3 py-2 text-center text-xs font-semibold text-primary uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-primary">
+                  <th className="px-3 py-2 text-center text-xs font-semibold text-primary uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -304,9 +356,9 @@ export default function AdminRegistrationsPage() {
                     }`}
                   >
                     {/* User Info */}
-                    <td className="px-4 py-4">
-                      <div className="space-y-1">
-                        <div className="text-white font-semibold text-sm">
+                    <td className="px-3 py-2">
+                      <div className="space-y-0.5">
+                        <div className="text-white font-semibold text-xs">
                           {registration.user?.name || "Unknown"}
                         </div>
                         <div className="text-gray-400 text-xs">
@@ -315,37 +367,45 @@ export default function AdminRegistrationsPage() {
                         {registration.isTeamRegistration &&
                           registration.teamName && (
                             <div className="text-primary text-xs font-mono">
-                              Team: {registration.teamName}
+                              {registration.teamName}
                             </div>
                           )}
                       </div>
                     </td>
 
                     {/* Event Info */}
-                    <td className="px-4 py-4">
-                      <div className="text-white text-sm">
+                    <td className="px-3 py-2">
+                      <div className="text-white text-xs">
                         {registration.event?.title || "Event Deleted"}
                       </div>
                     </td>
 
-                    {/* Type */}
-                    <td className="px-4 py-4">
-                      <span
-                        className={`px-2 py-1 text-xs rounded ${
-                          registration.isTeamRegistration
-                            ? "bg-primary/20 text-primary"
-                            : "bg-blue-500/20 text-blue-400"
-                        }`}
-                      >
-                        {registration.isTeamRegistration
-                          ? "Team"
-                          : "Individual"}
+                    {/* Event Type */}
+                    <td className="px-3 py-2 text-center">
+                      <span className="inline-block px-2 py-0.5 text-xs rounded bg-purple-500/20 text-purple-400 border border-purple-500/30 uppercase">
+                        {registration.event?.eventType || "N/A"}
                       </span>
                     </td>
 
+                    {/* Registration Type */}
+                    <td className="px-3 py-2 text-center">
+                      {registration.isTeamRegistration ? (
+                        <button
+                          onClick={() => openTeamModal(registration)}
+                          className="inline-block px-2 py-0.5 text-xs rounded bg-primary/20 text-primary border border-primary/50 hover:bg-primary/30 transition-colors cursor-pointer"
+                        >
+                          Team ({registration.teamMembers?.length || 0})
+                        </button>
+                      ) : (
+                        <span className="inline-block px-2 py-0.5 text-xs rounded bg-blue-500/20 text-blue-400">
+                          Solo
+                        </span>
+                      )}
+                    </td>
+
                     {/* Building Check-in */}
-                    <td className="px-4 py-4">
-                      <div className="flex flex-col items-center gap-2">
+                    <td className="px-3 py-2">
+                      <div className="flex flex-col items-center gap-1">
                         <button
                           onClick={() =>
                             handleCheckInToggle(
@@ -354,29 +414,20 @@ export default function AdminRegistrationsPage() {
                               registration.buildingCheckIn?.status || false,
                             )
                           }
-                          className={`px-3 py-1 text-xs rounded font-semibold transition-colors ${
+                          className={`px-2 py-0.5 text-xs rounded font-semibold transition-colors ${
                             registration.buildingCheckIn?.status
                               ? "bg-green-500/20 text-green-400 border border-green-500/50"
                               : "bg-red-500/20 text-red-400 border border-red-500/50"
                           }`}
                         >
-                          {registration.buildingCheckIn?.status
-                            ? "✓ Yes"
-                            : "✗ No"}
+                          {registration.buildingCheckIn?.status ? "✓" : "✗"}
                         </button>
-                        {registration.buildingCheckIn?.timestamp && (
-                          <div className="text-xs text-gray-500">
-                            {new Date(
-                              registration.buildingCheckIn.timestamp,
-                            ).toLocaleString()}
-                          </div>
-                        )}
                       </div>
                     </td>
 
                     {/* Session Check-in */}
-                    <td className="px-4 py-4">
-                      <div className="flex flex-col items-center gap-2">
+                    <td className="px-3 py-2">
+                      <div className="flex flex-col items-center gap-1">
                         <button
                           onClick={() =>
                             handleCheckInToggle(
@@ -385,30 +436,21 @@ export default function AdminRegistrationsPage() {
                               registration.sessionCheckIn?.status || false,
                             )
                           }
-                          className={`px-3 py-1 text-xs rounded font-semibold transition-colors ${
+                          className={`px-2 py-0.5 text-xs rounded font-semibold transition-colors ${
                             registration.sessionCheckIn?.status
                               ? "bg-green-500/20 text-green-400 border border-green-500/50"
                               : "bg-red-500/20 text-red-400 border border-red-500/50"
                           }`}
                         >
-                          {registration.sessionCheckIn?.status
-                            ? "✓ Yes"
-                            : "✗ No"}
+                          {registration.sessionCheckIn?.status ? "✓" : "✗"}
                         </button>
-                        {registration.sessionCheckIn?.timestamp && (
-                          <div className="text-xs text-gray-500">
-                            {new Date(
-                              registration.sessionCheckIn.timestamp,
-                            ).toLocaleString()}
-                          </div>
-                        )}
                       </div>
                     </td>
 
                     {/* Status */}
                     <td className="px-4 py-4 text-center">
                       <span
-                        className={`px-3 py-1 text-xs rounded ${
+                        className={`inline-block px-2 py-0.5 text-xs rounded uppercase ${
                           registration.registrationStatus === "registered"
                             ? "bg-blue-500/20 text-blue-400"
                             : registration.registrationStatus === "attended"
@@ -421,25 +463,33 @@ export default function AdminRegistrationsPage() {
                     </td>
 
                     {/* Actions */}
-                    <td className="px-4 py-4">
-                      <div className="flex justify-center gap-2 flex-wrap">
+                    <td className="px-3 py-2">
+                      <div className="flex justify-center gap-1 flex-wrap">
                         <button
                           onClick={() => handleSendQRCode(registration._id)}
                           disabled={sendingEmail === registration._id}
-                          className="px-3 py-1 text-xs bg-primary/20 text-primary border border-primary/50 rounded hover:bg-primary/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold whitespace-nowrap"
+                          className="px-2 py-0.5 text-xs bg-primary/20 text-primary border border-primary/50 rounded hover:bg-primary/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                          title="Send QR Code"
                         >
-                          {sendingEmail === registration._id
-                            ? "Sending..."
-                            : "📧 Send QR"}
+                          {sendingEmail === registration._id ? "..." : "📧"}
                         </button>
                         <button
                           onClick={() => handleSendODLetter(registration._id)}
                           disabled={sendingOD === registration._id}
-                          className="px-3 py-1 text-xs bg-blue-500/20 text-blue-400 border border-blue-500/50 rounded hover:bg-blue-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold whitespace-nowrap"
+                          className="px-2 py-0.5 text-xs bg-blue-500/20 text-blue-400 border border-blue-500/50 rounded hover:bg-blue-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                          title="Send OD Letter"
                         >
-                          {sendingOD === registration._id
-                            ? "Sending..."
-                            : "📄 Send OD"}
+                          {sendingOD === registration._id ? "..." : "📄"}
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleDeleteRegistration(registration._id)
+                          }
+                          disabled={deletingId === registration._id}
+                          className="px-2 py-0.5 text-xs bg-red-500/20 text-red-400 border border-red-500/50 rounded hover:bg-red-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                          title="Delete Registration"
+                        >
+                          {deletingId === registration._id ? "..." : "🗑️"}
                         </button>
                       </div>
                     </td>
@@ -449,6 +499,88 @@ export default function AdminRegistrationsPage() {
             </table>
           </div>
         </motion.div>
+
+        {/* Team Members Modal */}
+        {teamModalOpen && selectedTeam && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-gray-900 border-2 border-primary/30 rounded-lg max-w-3xl w-full mx-4 max-h-[80vh] overflow-y-auto"
+            >
+              {/* Modal Header */}
+              <div className="sticky top-0 bg-gray-900 border-b border-primary/20 px-6 py-4 flex justify-between items-center">
+                <div>
+                  <h3 className="text-2xl font-bold text-primary font-orbitron">
+                    TEAM DETAILS
+                  </h3>
+                  <p className="text-gray-400 text-sm mt-1">
+                    {selectedTeam.teamName}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setTeamModalOpen(false)}
+                  className="text-gray-400 hover:text-white transition-colors text-2xl leading-none"
+                >
+                  ×
+                </button>
+              </div>
+
+              {/* Modal Content */}
+              <div className="p-6">
+                <div className="mb-4">
+                  <div className="text-sm text-gray-400 mb-2">Event:</div>
+                  <div className="text-white font-semibold">
+                    {selectedTeam.event?.title}
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <div className="text-sm text-gray-400 mb-3">
+                    Team Members ({selectedTeam.teamMembers?.length || 0}):
+                  </div>
+                  <div className="space-y-3">
+                    {selectedTeam.teamMembers?.map((member, idx) => (
+                      <div
+                        key={idx}
+                        className="bg-black/50 border border-gray-700 rounded-lg p-4"
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <div className="text-white font-semibold">
+                              {member.name}
+                            </div>
+                            {member.isLeader && (
+                              <span className="px-2 py-0.5 text-xs bg-primary/20 text-primary border border-primary/50 rounded">
+                                LEADER
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                          <div className="text-gray-400">📧 {member.email}</div>
+                          <div className="text-gray-400">
+                            📱 {member.phoneNumber}
+                          </div>
+                          <div className="text-gray-400 col-span-full">
+                            🏫 {member.college}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setTeamModalOpen(false)}
+                  className="w-full px-6 py-3 bg-primary text-black font-bold rounded hover:bg-white transition-colors uppercase tracking-wider"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
 
         {filteredRegistrations.length === 0 && (
           <div className="text-center py-12 text-gray-400">

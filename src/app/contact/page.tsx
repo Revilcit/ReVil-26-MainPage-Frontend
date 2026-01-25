@@ -79,7 +79,7 @@ export default function ContactPage() {
     <div className="container mx-auto px-4 py-16 relative min-h-screen md:h-screen overflow-y-auto md:overflow-hidden">
       {/* Lanyard Background - Constrained to Right Half */}
       <motion.div
-        className="absolute top-0 right-0 w-full md:w-1/2 h-full pointer-events-none md:pointer-events-auto z-0"
+        className="absolute top-0 right-0 w-full md:w-1/2 h-full pointer-events-auto z-10"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
@@ -89,7 +89,7 @@ export default function ContactPage() {
       </motion.div>
 
       <motion.div
-        className="relative z-10 h-full flex items-center pointer-events-none mt-10"
+        className="relative z-20 h-full flex items-center pointer-events-none mt-10"
         initial={{ opacity: 0 }}
         animate={{ opacity: animationState === "finished" ? 1 : 0 }}
         transition={{ duration: 0.5 }}
@@ -163,7 +163,7 @@ export default function ContactPage() {
                       </div>
                       <button
                         type="submit"
-                        className="w-full py-4 bg-primary text-black font-bold hover:bg-white transition-colors"
+                        className="w-full py-4 bg-primary text-black font-bold hover:bg-white transition-colors text-center"
                       >
                         TRANSMIT MESSAGE
                       </button>
@@ -200,7 +200,7 @@ export default function ContactPage() {
           </div>
 
           {/* Map / Info - Only visible when content fades in */}
-          <div className="space-y-8 flex flex-col justify-center">
+          <div className="space-y-8 flex flex-col justify-center relative z-30 pointer-events-auto">
             <div>
               <h3 className="text-xl font-bold text-white mb-2">Location</h3>
               <p className="text-gray-400">
@@ -215,12 +215,41 @@ export default function ContactPage() {
               <h3 className="text-xl font-bold text-white mb-2">Direct Line</h3>
               <div className="space-y-2">
                 <p className="text-gray-400">
-                  President(Vishal):{" "}
+                  President (Vishal) :{" "}
                   <span className="text-primary">+91 87789 10145</span>
                 </p>
                 <p className="text-gray-400">
-                  Vice President(Dhanvanth):{" "}
+                  Vice President (Dhanvanth) :{" "}
                   <span className="text-primary">+91 87783 44532</span>
+                </p>
+              </div>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-white mb-2">Email</h3>
+              <p className="text-gray-400">
+                <span className="text-primary">info@revil2026.com</span>
+              </p>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-white mb-2">
+                Important Links
+              </h3>
+              <div className="space-y-2">
+                <p className="text-gray-400">
+                  <a
+                    href="/terms"
+                    className="text-primary hover:text-white underline"
+                  >
+                    Terms & Conditions
+                  </a>
+                </p>
+                <p className="text-gray-400">
+                  <a
+                    href="/refunds"
+                    className="text-primary hover:text-white underline"
+                  >
+                    Refunds & Cancellations
+                  </a>
                 </p>
               </div>
             </div>

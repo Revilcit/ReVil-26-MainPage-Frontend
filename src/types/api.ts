@@ -46,6 +46,7 @@ export interface Event {
   venue?: string;
   capacity: number;
   currentRegistrations?: number;
+  fee?: number;
   eventType: "workshop" | "talk" | "panel" | "networking" | "event";
   status: "upcoming" | "ongoing" | "completed" | "cancelled";
   speakers?: Array<{

@@ -482,3 +482,172 @@ export async function fetchAllEvents(): Promise<import("@/types/api").Event[]> {
     throw error;
   }
 }
+
+/**
+ * Fetch workshop by slug
+ */
+export async function fetchWorkshopBySlug(
+  slug: string,
+): Promise<import("@/types/api").Event> {
+  try {
+    const response = await fetch(`${API_URL}/api/workshops/slug/${slug}`, {
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        errorData.message || `Failed to fetch workshop: ${response.statusText}`,
+      );
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error: any) {
+    console.error("Failed to fetch workshop:", error);
+    throw new Error(error.message || "Failed to fetch workshop");
+  }
+}
+
+/**
+ * Register for a workshop
+ */
+export async function registerForWorkshop(
+  workshopId: string,
+  registrationData: {
+    phone?: string;
+    college?: string;
+    year?: string;
+    branch?: string;
+    additionalInfo?: string;
+  },
+): Promise<any> {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("UNAUTHORIZED");
+    }
+
+    const response = await api.post(
+      `/workshops/${workshopId}/register`,
+      registrationData,
+    );
+
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.status === 401) {
+      throw new Error("UNAUTHORIZED");
+    }
+    if (error.response?.data?.message) {
+      throw new Error(error.response.data.message);
+    }
+    throw error;
+  }
+}
+
+/**
+ * Cancel workshop registration
+ */
+export async function cancelWorkshopRegistration(
+  workshopId: string,
+): Promise<any> {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("UNAUTHORIZED");
+    }
+
+    const response = await api.delete(`/workshops/${workshopId}/register`);
+
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.status === 401) {
+      throw new Error("UNAUTHORIZED");
+    }
+    if (error.response?.data?.message) {
+      throw new Error(error.response.data.message);
+    }
+    throw error;
+  }
+}
+
+/**
+ * Create payment order for workshop registration
+ */
+export async function createPaymentOrder(
+  workshopId: string,
+  registrationData: {
+    phone: string;
+    college: string;
+    year: string;
+    branch: string;
+    additionalInfo?: string;
+  },
+): Promise<{
+  success: boolean;
+  orderId: string;
+  paymentSessionId: string;
+  amount: number;
+}> {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("UNAUTHORIZED");
+    }
+
+    const response = await api.post(
+      `/workshops/${workshopId}/create-payment-order`,
+      registrationData,
+    );
+
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.status === 401) {
+      throw new Error("UNAUTHORIZED");
+    }
+    if (error.response?.data?.error) {
+      throw new Error(error.response.data.error);
+    }
+    throw new Error("Failed to create payment order");
+  }
+}
+
+/**
+ * Get payment order status
+ */
+export async function getPaymentStatus(orderId: string): Promise<{
+  orderId: string;
+  status: "PENDING" | "SUCCESS" | "FAILED" | "CANCELLED";
+  amount: number;
+  workshop: {
+    _id: string;
+    title: string;
+    slug: string;
+  };
+  registrationId?: string;
+  paymentDetails?: any;
+  createdAt: string;
+}> {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("UNAUTHORIZED");
+    }
+
+    const response = await api.get(`/payment/status/${orderId}`);
+
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.status === 401) {
+      throw new Error("UNAUTHORIZED");
+    }
+    if (error.response?.data?.error) {
+      throw new Error(error.response.data.error);
+    }
+    throw new Error("Failed to get payment status");
+  }
+}

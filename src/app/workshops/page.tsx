@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { fetchWorkshops } from "@/lib/api";
 import { Event as ApiEvent } from "@/types/api";
 import toast, { Toaster } from "react-hot-toast";
@@ -14,6 +15,7 @@ interface Workshop extends ApiEvent {
 }
 
 export default function WorkshopsPage() {
+  const router = useRouter();
   const [workshops, setWorkshops] = useState<Workshop[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,15 +35,36 @@ export default function WorkshopsPage() {
     loadWorkshops();
   }, []);
 
-  const handleRegisterClick = () => {
-    toast("Coming Soon! 🚀", {
-      icon: "⏳",
-      style: {
-        borderRadius: "10px",
-        background: "#333",
-        color: "#fff",
-      },
-    });
+  const handleRegisterClick = (workshop: Workshop) => {
+    // Check if user is logged in
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+    if (!token) {
+      toast("Please login to register for workshops", {
+        icon: "🔐",
+        style: {
+          borderRadius: "10px",
+          background: "#333",
+          color: "#fff",
+        },
+      });
+      router.push("/login");
+      return;
+    }
+
+    // Navigate to workshop registration page
+    if (workshop.slug) {
+      router.push(`/workshops/${workshop.slug}/register`);
+    } else {
+      // Fallback: use workshop ID if slug is not available
+      console.warn("Workshop slug not found, using ID instead:", workshop);
+      if (workshop._id) {
+        router.push(`/workshops/${workshop._id}/register`);
+      } else {
+        toast.error("Workshop registration not available - missing slug or ID");
+      }
+    }
   };
 
   if (loading) {
@@ -126,13 +149,52 @@ export default function WorkshopsPage() {
                           {workshop.description}
                         </p>
 
+                        {/* Workshop Info */}
+                        <div className="space-y-2 mb-4 text-sm">
+                          {workshop.duration && (
+                            <div className="flex items-center gap-2 text-gray-400">
+                              <svg
+                                className="w-4 h-4 text-primary"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                              </svg>
+                              <span>{workshop.duration}</span>
+                            </div>
+                          )}
+                          {workshop.fee && (
+                            <div className="flex items-center gap-2 text-primary font-bold">
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                              </svg>
+                              <span>₹{workshop.fee}</span>
+                            </div>
+                          )}
+                        </div>
+
                         {/* Action Button */}
                         <button
-                          onClick={handleRegisterClick}
-                          className="w-full px-4 py-2 text-sm bg-gray-700 text-gray-400 border border-gray-600 font-bold tracking-wider transition-all uppercase cursor-not-allowed"
-                          disabled
+                          onClick={() => handleRegisterClick(workshop)}
+                          className="w-full px-4 py-2 text-sm bg-white text-black border border-white font-bold tracking-wider hover:bg-black hover:text-white transition-all uppercase"
                         >
-                          Coming Soon
+                          Register Now
                         </button>
                       </div>
                     </div>
