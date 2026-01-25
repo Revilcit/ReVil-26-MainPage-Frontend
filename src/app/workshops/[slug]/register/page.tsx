@@ -669,9 +669,7 @@ export default function WorkshopRegisterPage() {
                           d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
-                      <span>
-                        Service: {workshop.title}
-                      </span>
+                      <span>Service: {workshop.title}</span>
                     </p>
                     <p className="flex items-start gap-2">
                       <svg
@@ -687,9 +685,7 @@ export default function WorkshopRegisterPage() {
                           d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
-                      <span>
-                        Price: ₹{workshop.fee || 0} INR
-                      </span>
+                      <span>Price: ₹{workshop.fee || 0} INR</span>
                     </p>
                   </div>
                   <div className="flex flex-col gap-2 mt-4">

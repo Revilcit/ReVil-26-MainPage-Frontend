@@ -109,7 +109,7 @@ export default function AboutPage() {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="flex justify-center mt-12 mb-12 w-full"
         >
-          <Link href="/register" className="w-full max-w-2xl">
+          <Link href="/events" className="w-full max-w-2xl">
             <ParticleCard
               className="px-10 py-8 bg-black hover:bg-white/10 transition-colors border border-white/20 rounded-[20px] relative overflow-hidden group text-center uppercase tracking-widest card--border-glow flex flex-col items-center justify-center min-h-[150px]"
               glowColor="0, 240, 255"

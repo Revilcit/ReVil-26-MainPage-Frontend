@@ -350,16 +350,16 @@ export default function RegisterPage() {
                       className="text-sm text-gray-300 flex flex-col md:flex-row md:items-center md:gap-4"
                     >
                       <div className="font-medium text-white">{c.name}</div>
-                      <div className="text-gray-400">
+                      <div className="text-gray-400 flex flex-col sm:flex-row sm:gap-3 break-words">
                         <a
                           href={`tel:${c.phone?.replace(/\s+/g, "")}`}
-                          className="hover:underline mr-3"
+                          className="hover:underline"
                         >
                           {c.phone}
                         </a>
                         <a
                           href={`mailto:${c.email}`}
-                          className="text-primary hover:underline"
+                          className="text-primary hover:underline break-all"
                         >
                           {c.email}
                         </a>
