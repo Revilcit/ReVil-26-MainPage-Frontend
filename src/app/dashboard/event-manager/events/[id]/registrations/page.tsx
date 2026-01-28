@@ -209,20 +209,28 @@ export default function EventRegistrationsPage({
               </thead>
               <tbody className="divide-y divide-gray-700">
                 {registrations.map((reg) => (
-                  <tr 
-                    key={reg._id} 
+                  <tr
+                    key={reg._id}
                     className={`hover:bg-gray-900/50 transition-colors ${
                       reg.isTeamRegistration ? "cursor-pointer" : ""
                     }`}
-                    onClick={() => reg.isTeamRegistration && setViewingTeam(reg)}
+                    onClick={() =>
+                      reg.isTeamRegistration && setViewingTeam(reg)
+                    }
                   >
-                    <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                    <td
+                      className="px-6 py-4"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <div className="flex flex-col gap-1">
                         <div className="text-sm font-medium text-white">
                           {reg.user.name}
                         </div>
                         <div className="text-xs text-gray-400">
                           {reg.user.email}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          📱 {reg.phoneNumber || reg.user.phoneNumber || "N/A"}
                         </div>
                         {reg.isTeamRegistration && reg.teamName && (
                           <button
@@ -237,7 +245,10 @@ export default function EventRegistrationsPage({
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center" onClick={(e) => e.stopPropagation()}>
+                    <td
+                      className="px-6 py-4 whitespace-nowrap text-center"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <span
                         className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded ${
                           reg.buildingCheckIn?.status
@@ -248,7 +259,10 @@ export default function EventRegistrationsPage({
                         {reg.buildingCheckIn?.status ? "Entered" : "Pending"}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center" onClick={(e) => e.stopPropagation()}>
+                    <td
+                      className="px-6 py-4 whitespace-nowrap text-center"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <button
                         onClick={() => toggleCheckIn(reg._id)}
                         disabled={!reg.buildingCheckIn?.status}
@@ -261,7 +275,10 @@ export default function EventRegistrationsPage({
                         {reg.sessionCheckIn?.status ? "Present" : "Absent"}
                       </button>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center" onClick={(e) => e.stopPropagation()}>
+                    <td
+                      className="px-6 py-4 whitespace-nowrap text-center"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <span
                         className={`text-xs font-semibold ${
                           reg.hasReceivedODLetter
@@ -272,7 +289,10 @@ export default function EventRegistrationsPage({
                         {reg.hasReceivedODLetter ? "Sent" : "—"}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center" onClick={(e) => e.stopPropagation()}>
+                    <td
+                      className="px-6 py-4 whitespace-nowrap text-center"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <button
                         onClick={() => sendODLetter(reg._id)}
                         disabled={!reg.sessionCheckIn?.status}
@@ -301,7 +321,7 @@ export default function EventRegistrationsPage({
 
       {/* Team Details Modal */}
       {viewingTeam && (
-        <div 
+        <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
           onClick={() => setViewingTeam(null)}
         >
@@ -330,72 +350,107 @@ export default function EventRegistrationsPage({
                 onClick={() => setViewingTeam(null)}
                 className="text-gray-400 hover:text-white transition-colors p-2 hover:bg-gray-800 rounded"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
 
             <div className="space-y-6">
-              {viewingTeam.teamMembers && viewingTeam.teamMembers.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-bold text-primary mb-4 uppercase tracking-wider flex items-center gap-2">
-                    <span className="text-2xl">👥</span>
-                    Team Members
-                    <span className="text-sm font-normal text-gray-400">({viewingTeam.teamMembers.length})</span>
-                  </h3>
-                  <div className="grid gap-4">
-                    {viewingTeam.teamMembers.map((member, index) => (
-                      <div
-                        key={index}
-                        className="bg-gray-900/70 border border-gray-700 rounded-lg p-5 hover:border-primary/30 transition-colors"
-                      >
-                        <div className="flex items-start justify-between mb-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
-                              {index + 1}
+              {viewingTeam.teamMembers &&
+                viewingTeam.teamMembers.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-bold text-primary mb-4 uppercase tracking-wider flex items-center gap-2">
+                      <span className="text-2xl">👥</span>
+                      Team Members
+                      <span className="text-sm font-normal text-gray-400">
+                        ({viewingTeam.teamMembers.length})
+                      </span>
+                    </h3>
+                    <div className="grid gap-4">
+                      {viewingTeam.teamMembers.map((member, index) => (
+                        <div
+                          key={index}
+                          className="bg-gray-900/70 border border-gray-700 rounded-lg p-5 hover:border-primary/30 transition-colors"
+                        >
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+                                {index + 1}
+                              </div>
+                              <div>
+                                <h4 className="text-white font-bold text-lg">
+                                  {member.name}
+                                </h4>
+                                {member.isLeader && (
+                                  <span className="inline-block mt-1 px-2 py-0.5 text-xs rounded bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
+                                    ⭐ Leader
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                              <p className="text-xs text-gray-400 mb-1">
+                                📧 Email
+                              </p>
+                              <p className="text-gray-200 text-sm break-all">
+                                {member.email}
+                              </p>
                             </div>
                             <div>
-                              <h4 className="text-white font-bold text-lg">{member.name}</h4>
-                              {member.isLeader && (
-                                <span className="inline-block mt-1 px-2 py-0.5 text-xs rounded bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
-                                  ⭐ Leader
-                                </span>
-                              )}
+                              <p className="text-xs text-gray-400 mb-1">
+                                📱 Phone
+                              </p>
+                              <p className="text-gray-200 text-sm font-medium">
+                                {member.phoneNumber}
+                              </p>
                             </div>
+                            <div>
+                              <p className="text-xs text-gray-400 mb-1">
+                                🏫 College
+                              </p>
+                              <p className="text-gray-200 text-sm">
+                                {member.college}
+                              </p>
+                            </div>
+                            {member.department && (
+                              <div>
+                                <p className="text-xs text-gray-400 mb-1">
+                                  🎓 Department
+                                </p>
+                                <p className="text-gray-200 text-sm">
+                                  {member.department}
+                                </p>
+                              </div>
+                            )}
+                            {member.year && (
+                              <div>
+                                <p className="text-xs text-gray-400 mb-1">
+                                  📅 Year
+                                </p>
+                                <p className="text-gray-200 text-sm">
+                                  {member.year}
+                                </p>
+                              </div>
+                            )}
                           </div>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          <div>
-                            <p className="text-xs text-gray-400 mb-1">📧 Email</p>
-                            <p className="text-gray-200 text-sm break-all">{member.email}</p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-gray-400 mb-1">📱 Phone</p>
-                            <p className="text-gray-200 text-sm font-medium">{member.phoneNumber}</p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-gray-400 mb-1">🏫 College</p>
-                            <p className="text-gray-200 text-sm">{member.college}</p>
-                          </div>
-                          {member.department && (
-                            <div>
-                              <p className="text-xs text-gray-400 mb-1">🎓 Department</p>
-                              <p className="text-gray-200 text-sm">{member.department}</p>
-                            </div>
-                          )}
-                          {member.year && (
-                            <div>
-                              <p className="text-xs text-gray-400 mb-1">📅 Year</p>
-                              <p className="text-gray-200 text-sm">{member.year}</p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
 
             <div className="mt-8">

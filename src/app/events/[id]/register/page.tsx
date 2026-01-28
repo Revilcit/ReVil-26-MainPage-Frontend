@@ -1061,10 +1061,18 @@ export default function RegisterPage() {
           <div className="mt-8 flex gap-4">
             <button
               type="submit"
-              disabled={submitting || !acceptedTerms}
+              disabled={
+                submitting ||
+                !acceptedTerms ||
+                (event.currentRegistrations || 0) >= event.capacity
+              }
               className="flex-1 px-6 py-4 bg-primary text-black font-bold uppercase text-sm hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {submitting ? "REGISTERING..." : "COMPLETE REGISTRATION"}
+              {submitting
+                ? "REGISTERING..."
+                : (event.currentRegistrations || 0) >= event.capacity
+                  ? "EVENT FULL"
+                  : "COMPLETE REGISTRATION"}
             </button>
             <button
               type="button"
