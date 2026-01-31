@@ -61,8 +61,7 @@ export default function RegisterPage() {
           // Check if CTF is full and show alternative suggestion
           if (
             (foundEvent.title.toLowerCase().includes("ctf") ||
-              foundEvent.slug?.includes("ctf")) &&
-            (foundEvent.currentRegistrations || 0) >= foundEvent.capacity
+              foundEvent.slug?.includes("ctf"))
           ) {
             setShowCtfFullModal(true);
           }
