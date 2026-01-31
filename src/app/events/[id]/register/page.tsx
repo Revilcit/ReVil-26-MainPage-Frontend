@@ -36,6 +36,9 @@ export default function RegisterPage() {
   // Escape Room full modal
   const [showEscapeRoomFullModal, setShowEscapeRoomFullModal] = useState(false);
 
+  // Paper Presentation full modal
+  const [showPaperPresentationFullModal, setShowPaperPresentationFullModal] = useState(false);
+
   // Team registration fields
   const [isTeamRegistration, setIsTeamRegistration] = useState(false);
   const [teamName, setTeamName] = useState("");
@@ -76,6 +79,13 @@ export default function RegisterPage() {
             (foundEvent.currentRegistrations || 0) >= foundEvent.capacity
           ) {
             setShowEscapeRoomFullModal(true);
+          }
+          // Check if Paper Presentation - always show the choice modal
+          else if (
+            foundEvent.title.toLowerCase().includes("paper presentation") ||
+            foundEvent.slug?.includes("paper-presentation")
+          ) {
+            setShowPaperPresentationFullModal(true);
           }
           // Show limited seats modal for specific events
           else if (
@@ -1329,6 +1339,109 @@ export default function RegisterPage() {
                   className="text-gray-400 hover:text-white transition-colors text-sm font-mono underline"
                 >
                   Back to All Events
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Paper Presentation Full Modal - Red Pill / Blue Pill Choice */}
+        {showPaperPresentationFullModal && (
+          <div className="fixed inset-0 bg-black/95 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-gradient-to-br from-purple-950/30 to-black border border-purple-500/30 p-6 max-w-md w-full rounded-lg"
+            >
+              <div className="text-center mb-2">
+                <h2 className="text-lg font-bold font-orbitron text-purple-400 mb-1">
+                  PAPER PRESENTATION IS FULL
+                </h2>
+                <p className="text-gray-500 font-mono text-xs">
+                  Choose your destiny, Neo.
+                </p>
+              </div>
+
+              {/* Morpheus Image with clickable hands */}
+              <div className="relative flex justify-center mb-2">
+                <img 
+                  src="/morpheus-matrix-red-pill-blue-pill-need-to-be-in-the-r-place-v0-vv5sx5xzp6db1.png" 
+                  alt="Choose wisely" 
+                  className="w-48 h-auto object-contain"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 mb-4 -mt-2">
+                {/* Blue Pill - Thread Intelligence (LEFT - matches blue hand) */}
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-gradient-to-br from-blue-950/40 to-blue-900/20 border border-blue-500/40 rounded-lg p-3 cursor-target"
+                  onClick={async () => {
+                    setShowPaperPresentationFullModal(false);
+                    try {
+                      const events = await fetchEvents();
+                      const threadIntelEvent = events.find(
+                        (e) =>
+                          e.slug === "thread-intelligence" ||
+                          e.title.toLowerCase().includes("thread intelligence") ||
+                          e.title.toLowerCase().includes("threat intelligence"),
+                      );
+                      if (threadIntelEvent) {
+                        router.push(`/events/${threadIntelEvent._id}/register`);
+                      } else {
+                        router.push("/workshops");
+                      }
+                    } catch (error) {
+                      router.push("/workshops");
+                    }
+                  }}
+                >
+                  <h4 className="text-white text-xs font-semibold mb-1 text-center">Thread Intelligence</h4>
+                  <p className="text-gray-400 text-xs text-center leading-relaxed">
+                    How <span className="text-blue-400">attackers</span> operate
+                  </p>
+                </motion.div>
+
+                {/* Red Pill - Pixel Palette (RIGHT - matches red hand) */}
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-gradient-to-br from-red-950/40 to-red-900/20 border border-red-500/40 rounded-lg p-3 cursor-target"
+                  onClick={async () => {
+                    setShowPaperPresentationFullModal(false);
+                    try {
+                      const events = await fetchEvents();
+                      const pixelPaletteEvent = events.find(
+                        (e) =>
+                          e.slug === "pixel-palette" ||
+                          e.title.toLowerCase().includes("pixel palette") ||
+                          e.title.toLowerCase().includes("poster design"),
+                      );
+                      if (pixelPaletteEvent) {
+                        router.push(`/events/${pixelPaletteEvent._id}/register`);
+                      } else {
+                        router.push("/events");
+                      }
+                    } catch (error) {
+                      router.push("/events");
+                    }
+                  }}
+                >
+                  <h4 className="text-white text-xs font-semibold mb-1 text-center">Pixel Palette</h4>
+                  <p className="text-gray-400 text-xs text-center leading-relaxed">
+                    Unleash your <span className="text-red-400">creativity</span>
+                  </p>
+                </motion.div>
+              </div>
+
+              <div className="text-center">
+                <button
+                  onClick={() => {
+                    setShowPaperPresentationFullModal(false);
+                    router.push("/events");
+                  }}
+                  className="text-gray-600 hover:text-white transition-colors text-xs font-mono"
+                >
+                  back to events
                 </button>
               </div>
             </motion.div>
