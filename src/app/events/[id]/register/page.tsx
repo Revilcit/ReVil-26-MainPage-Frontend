@@ -33,6 +33,12 @@ export default function RegisterPage() {
   // CTF full modal
   const [showCtfFullModal, setShowCtfFullModal] = useState(false);
 
+  // Escape Room full modal
+  const [showEscapeRoomFullModal, setShowEscapeRoomFullModal] = useState(false);
+
+  // Paper Presentation full modal
+  const [showPaperPresentationFullModal, setShowPaperPresentationFullModal] = useState(false);
+
   // Team registration fields
   const [isTeamRegistration, setIsTeamRegistration] = useState(false);
   const [teamName, setTeamName] = useState("");
@@ -65,6 +71,22 @@ export default function RegisterPage() {
             (foundEvent.currentRegistrations || 0) >= foundEvent.capacity
           ) {
             setShowCtfFullModal(true);
+          }
+          // Check if Escape Room is full and show alternative suggestion
+          else if (
+            (foundEvent.title.toLowerCase().includes("escape room") ||
+              foundEvent.slug?.includes("escape-room")) &&
+            (foundEvent.currentRegistrations || 0) >= foundEvent.capacity
+          ) {
+            setShowEscapeRoomFullModal(true);
+          }
+          // Check if Paper Presentation is full (limit 70)
+          else if (
+            (foundEvent.title.toLowerCase().includes("paper presentation") ||
+              foundEvent.slug?.includes("paper-presentation")) &&
+            (foundEvent.currentRegistrations || 0) >= 70
+          ) {
+            setShowPaperPresentationFullModal(true);
           }
           // Show limited seats modal for specific events
           else if (
@@ -1191,29 +1213,30 @@ export default function RegisterPage() {
                   onClick={async () => {
                     setShowCtfFullModal(false);
                     try {
-                      // Find Project Sherlocks event
+                      // Find Project Sherlock event
                       const events = await fetchEvents();
-                      const projectSherlocksEvent = events.find(
+                      const projectSherlockEvent = events.find(
                         (e) =>
-                          e.slug === "project-sherlocks" ||
-                          e.title.toLowerCase().includes("project sherlocks"),
+                          e.slug === "project-sherlock-log-trace" ||
+                          e.title.toLowerCase().includes("project sherlock") ||
+                          e.title.toLowerCase().includes("log trace"),
                       );
 
-                      if (projectSherlocksEvent) {
+                      if (projectSherlockEvent) {
                         router.push(
-                          `/events/${projectSherlocksEvent._id}/register`,
+                          `/events/${projectSherlockEvent._id}/register`,
                         );
                       } else {
                         router.push("/events");
                       }
                     } catch (error) {
-                      console.error("Error finding Project Sherlocks:", error);
+                      console.error("Error finding Project Sherlock:", error);
                       router.push("/events");
                     }
                   }}
                   className="w-full px-6 py-3 bg-primary text-black font-bold uppercase text-sm hover:bg-white transition-colors font-mono rounded"
                 >
-                  View Project Sherlocks
+                  View Project Sherlock
                 </button>
               </div>
 
@@ -1226,6 +1249,200 @@ export default function RegisterPage() {
                   className="text-gray-400 hover:text-white transition-colors text-sm font-mono underline"
                 >
                   Back to All Events
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Escape Room Full Modal - Suggest Beneath the Mask */}
+        {showEscapeRoomFullModal && (
+          <div className="fixed inset-0 bg-black/95 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-gradient-to-br from-orange-950/50 to-black border border-orange-500/50 p-8 max-w-lg w-full rounded-lg"
+            >
+              <div className="flex items-start gap-4 mb-6">
+                <div className="text-orange-500 text-5xl">🚪</div>
+                <div className="flex-1">
+                  <h2 className="text-2xl font-bold font-orbitron text-orange-500 mb-2">
+                    ESCAPE ROOM FULL
+                  </h2>
+                  <p className="text-gray-400 font-mono text-sm leading-relaxed mb-4">
+                    Unfortunately, the Escape Room event has reached maximum capacity.
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-primary/10 border border-primary/50 rounded-lg p-6 mb-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="text-primary text-3xl">🎭</div>
+                  <h3 className="text-xl font-bold font-orbitron text-primary">
+                    Try Beneath the Mask!
+                  </h3>
+                </div>
+                <p className="text-gray-300 text-sm leading-relaxed mb-4">
+                  Don't miss out!{" "}
+                  <strong className="text-white">Beneath the Mask</strong> is
+                  an exciting cybersecurity event where you uncover hidden access through logic, clues, and observation.
+                </p>
+                <ul className="space-y-2 text-sm text-gray-300 mb-4">
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary">🔐</span>
+                    <span>Uncover hidden access and credentials</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary">🧠</span>
+                    <span>Use logic and observation skills</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary">🏆</span>
+                    <span>Progress through challenging levels</span>
+                  </li>
+                </ul>
+                <button
+                  onClick={async () => {
+                    setShowEscapeRoomFullModal(false);
+                    try {
+                      // Find Beneath the Mask event
+                      const events = await fetchEvents();
+                      const beneathTheMaskEvent = events.find(
+                        (e) =>
+                          e.slug === "beneath-the-mask" ||
+                          e.title.toLowerCase().includes("beneath the mask"),
+                      );
+
+                      if (beneathTheMaskEvent) {
+                        router.push(
+                          `/events/${beneathTheMaskEvent._id}/register`,
+                        );
+                      } else {
+                        router.push("/events");
+                      }
+                    } catch (error) {
+                      console.error("Error finding Beneath the Mask:", error);
+                      router.push("/events");
+                    }
+                  }}
+                  className="w-full px-6 py-3 bg-primary text-black font-bold uppercase text-sm hover:bg-white transition-colors font-mono rounded"
+                >
+                  View Beneath the Mask
+                </button>
+              </div>
+
+              <div className="flex justify-center">
+                <button
+                  onClick={() => {
+                    setShowEscapeRoomFullModal(false);
+                    router.push("/events");
+                  }}
+                  className="text-gray-400 hover:text-white transition-colors text-sm font-mono underline"
+                >
+                  Back to All Events
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Paper Presentation Full Modal - Red Pill / Blue Pill Choice */}
+        {showPaperPresentationFullModal && (
+          <div className="fixed inset-0 bg-black/95 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-gradient-to-br from-purple-950/30 to-black border border-purple-500/30 p-6 max-w-md w-full rounded-lg"
+            >
+              <div className="text-center mb-2">
+                <h2 className="text-lg font-bold font-orbitron text-purple-400 mb-1">
+                  PAPER PRESENTATION IS FULL
+                </h2>
+                <p className="text-gray-500 font-mono text-xs">
+                  Choose your destiny, Neo.
+                </p>
+              </div>
+
+              {/* Morpheus Image with clickable hands */}
+              <div className="relative flex justify-center mb-2">
+                <img 
+                  src="/morpheus-matrix-red-pill-blue-pill.png" 
+                  alt="Choose wisely" 
+                  className="w-48 h-auto object-contain"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 mb-4 -mt-2">
+                {/* Blue Pill - Thread Intelligence (LEFT - matches blue hand) */}
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-gradient-to-br from-blue-950/40 to-blue-900/20 border border-blue-500/40 rounded-lg p-3 cursor-target"
+                  onClick={async () => {
+                    setShowPaperPresentationFullModal(false);
+                    try {
+                      const events = await fetchEvents();
+                      const threadIntelEvent = events.find(
+                        (e) =>
+                          e.slug === "thread-intelligence" ||
+                          e.title.toLowerCase().includes("thread intelligence") ||
+                          e.title.toLowerCase().includes("threat intelligence"),
+                      );
+                      if (threadIntelEvent) {
+                        router.push(`/events/${threadIntelEvent._id}/register`);
+                      } else {
+                        router.push("/workshops");
+                      }
+                    } catch (error) {
+                      router.push("/workshops");
+                    }
+                  }}
+                >
+                  <h4 className="text-white text-xs font-semibold mb-1 text-center">Thread Intelligence</h4>
+                  <p className="text-gray-400 text-xs text-center leading-relaxed">
+                    How <span className="text-blue-400">attackers</span> operate
+                  </p>
+                </motion.div>
+
+                {/* Red Pill - Pixel Palette (RIGHT - matches red hand) */}
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-gradient-to-br from-red-950/40 to-red-900/20 border border-red-500/40 rounded-lg p-3 cursor-target"
+                  onClick={async () => {
+                    setShowPaperPresentationFullModal(false);
+                    try {
+                      const events = await fetchEvents();
+                      const pixelPaletteEvent = events.find(
+                        (e) =>
+                          e.slug === "pixel-palette" ||
+                          e.title.toLowerCase().includes("pixel palette") ||
+                          e.title.toLowerCase().includes("poster design"),
+                      );
+                      if (pixelPaletteEvent) {
+                        router.push(`/events/${pixelPaletteEvent._id}/register`);
+                      } else {
+                        router.push("/events");
+                      }
+                    } catch (error) {
+                      router.push("/events");
+                    }
+                  }}
+                >
+                  <h4 className="text-white text-xs font-semibold mb-1 text-center">Pixel Palette</h4>
+                  <p className="text-gray-400 text-xs text-center leading-relaxed">
+                    Unleash your <span className="text-red-400">creativity</span>
+                  </p>
+                </motion.div>
+              </div>
+
+              <div className="text-center">
+                <button
+                  onClick={() => {
+                    setShowPaperPresentationFullModal(false);
+                    router.push("/events");
+                  }}
+                  className="text-gray-600 hover:text-white transition-colors text-xs font-mono"
+                >
+                  back to events
                 </button>
               </div>
             </motion.div>
