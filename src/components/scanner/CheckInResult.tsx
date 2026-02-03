@@ -19,6 +19,7 @@ export interface CheckInData {
       venue?: string;
     };
     timestamp?: string;
+    isSpotRegistration?: boolean;
   };
 }
 
@@ -166,6 +167,13 @@ export default function CheckInResult({
       {/* User Details */}
       {result.data?.user && (
         <div className="bg-black/40 rounded-xl p-4 mb-4">
+          {result.data.isSpotRegistration && (
+            <div className="mb-3 flex justify-center">
+              <span className="px-3 py-1.5 text-sm font-bold rounded-lg bg-orange-500/20 text-orange-400 border border-orange-500/40 animate-pulse flex items-center gap-2">
+                💰 SPOT REGISTRATION - PAID USER
+              </span>
+            </div>
+          )}
           <div className="flex items-center gap-4">
             {result.data.user.picture ? (
               <Image
