@@ -617,9 +617,16 @@ export default function SessionCheckInPage() {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-white text-sm font-medium truncate">
-                            {scan.data?.user?.name || "Unknown"}
-                          </p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-white text-sm font-medium truncate">
+                              {scan.data?.user?.name || "Unknown"}
+                            </p>
+                            {scan.data?.isSpotRegistration && (
+                              <span className="px-1 py-0.5 text-[9px] font-bold rounded bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                                💰 SPOT
+                              </span>
+                            )}
+                          </div>
                           <p className="text-gray-500 text-xs truncate">
                             {scan.data?.user?.email || scan.message}
                           </p>

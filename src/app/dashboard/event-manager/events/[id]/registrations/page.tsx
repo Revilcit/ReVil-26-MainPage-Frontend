@@ -44,6 +44,7 @@ interface Registration {
     timestamp?: string;
   };
   hasReceivedODLetter: boolean;
+  addedBy?: string;
 }
 
 export default function EventRegistrationsPage({
@@ -225,8 +226,15 @@ export default function EventRegistrationsPage({
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className="flex flex-col gap-1">
-                        <div className="text-sm font-medium text-white">
-                          {reg.user.name}
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-white">
+                            {reg.user.name}
+                          </span>
+                          {reg.addedBy && (
+                            <span className="px-1.5 py-0.5 text-[10px] font-bold rounded bg-orange-500/20 text-orange-400 border border-orange-500/30 animate-pulse">
+                              💰 SPOT
+                            </span>
+                          )}
                         </div>
                         <div className="text-xs text-gray-400">
                           {reg.user.email}
